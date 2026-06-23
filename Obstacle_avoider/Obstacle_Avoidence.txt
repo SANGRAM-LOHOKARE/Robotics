@@ -1,0 +1,121 @@
+// --- SENSOR ANALOG PINS
+const int trig_L = A0; 
+const int echo_L = A1; 
+const int trig_C = A2; 
+const int echo_C = A3; 
+const int trig_R = A4; 
+const int echo_R = A5; 
+
+// --- MOTORS ON DIGITAL PINS 
+const int mRF = 8;     
+const int mRB = 9;     
+const int mLF = 11;    
+const int mLB = 12;    
+const int sped_L = 5;  // Must be a PWM pin
+const int sped_R = 6;  // Must be a PWM pin
+
+// VALUES ---
+const int min_distance = 40; 
+const int fast = 100;        
+const int slow = 50;    
+const int turn_delay = 300;  
+
+void setup() {
+  Serial.begin(9600);
+
+  pinMode(trig_L, OUTPUT);
+  pinMode(echo_L, INPUT);
+  pinMode(trig_C, OUTPUT);
+  pinMode(echo_C, INPUT);
+  pinMode(trig_R, OUTPUT);
+  pinMode(echo_R, INPUT);
+
+  // Motor Pins
+  pinMode(mRF, OUTPUT);
+  pinMode(mRB, OUTPUT);
+  pinMode(mLF, OUTPUT);
+  pinMode(mLB, OUTPUT);
+  pinMode(sped_L, OUTPUT);
+  pinMode(sped_R, OUTPUT);
+}
+
+void loop() {
+  // Read distances 
+  float d_left   = readDistance(trig_L, echo_L);
+  delay(10); 
+  float d_center = readDistance(trig_C, echo_C);
+  delay(10);
+  float d_right  = readDistance(trig_R, echo_R);
+  delay(10);
+
+  // --- OBSTACLE AVOIDANCE LOGIC ---
+  if (d_center > min_distance) {
+    front();
+  } 
+  else if (d_left > d_right && d_left > min_distance) {
+      left();
+  } 
+  else if (d_right > d_left && d_right > min_distance) {
+      right();
+  } 
+  else {
+      backwards();
+      delay(500); 
+  }
+}
+
+float readDistance(int trigPin, int echoPin) {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10); 
+  digitalWrite(trigPin, LOW);
+  
+  long duration = pulseIn(echoPin, HIGH, 30000); 
+  if (duration == 0) return 400.0;               
+  
+  return duration * 0.01715;                     
+}
+
+void backwards() {
+  analogWrite(sped_L, fast);
+  analogWrite(sped_R, fast);
+  digitalWrite(mRF, HIGH);
+  digitalWrite(mRB, LOW);
+  digitalWrite(mLF, HIGH);
+  digitalWrite(mLB, LOW);
+  Serial.print("\t BACKWARDDDDDDDDDDDD!!!!\n");
+}
+
+void left() {
+  analogWrite(sped_L, fast);
+  analogWrite(sped_R, fast);
+  digitalWrite(mRF, LOW);
+  digitalWrite(mRB, HIGH);
+  digitalWrite(mLF, HIGH);
+  digitalWrite(mLB, LOW);
+  delay(turn_delay); 
+  Serial.print("\t LEFTTTTTTTTTTTTT!!!!\n");
+}
+
+void right() {
+  analogWrite(sped_L, fast);
+  analogWrite(sped_R, fast);
+  digitalWrite(mRF, HIGH);
+  digitalWrite(mRB, LOW);
+  digitalWrite(mLF, LOW);
+  digitalWrite(mLB, HIGH);
+  delay(turn_delay);
+  Serial.print("\t RIGHTTTTTTTTTTTT!!!!\n");
+
+}
+
+void front() {
+  analogWrite(sped_L, fast);
+  analogWrite(sped_R, fast);
+  digitalWrite(mRF, LOW);
+  digitalWrite(mRB, HIGH);
+  digitalWrite(mLF, LOW);
+  digitalWrite(mLB, HIGH);
+  Serial.print("\t FORWARDDDDDDDDDDDDD!!!!\n");
+}
