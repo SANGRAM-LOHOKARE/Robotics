@@ -1,0 +1,87 @@
+// --- PIN DEFINITIONS ---
+const int irL = 2; 
+const int irR = 3;
+const int sped_L  = 5;
+const int sped_R  = 6;
+
+const int m1f = 8;   //right motor
+const int m1b = 9;
+const int m2f = 11;   //left motor
+const int m2b = 12;
+
+//other constants
+const int fast = 120;
+const int slow = 70;
+
+void setup() {
+  pinMode(m1f, OUTPUT);
+  pinMode(m1b, OUTPUT);
+  pinMode(m2f, OUTPUT);
+  pinMode(m2b, OUTPUT);
+
+  pinMode(irL, INPUT);
+  pinMode(irR, INPUT);
+
+  pinMode(sped_L, OUTPUT);
+  pinMode(sped_R, OUTPUT);
+}
+
+void loop() {
+  int left = digitalRead(irL);
+  int rite = digitalRead(irR);
+
+  if (left == LOW && rite == LOW) {
+    moveforward();
+  }
+  else if (left == LOW && rite == HIGH) {
+    moveright();
+  }
+  else if (left == HIGH && rite == LOW) {
+    moveleft();
+  }
+  else if (left == HIGH && rite == HIGH) {
+    Stop();
+  }
+}
+
+void moveforward() {
+  analogWrite(sped_L, fast);
+  analogWrite(sped_R, fast);
+
+  digitalWrite(m1f, HIGH);
+  digitalWrite(m1b, LOW);
+  digitalWrite(m2f, HIGH);
+  digitalWrite(m2b, LOW);
+}
+
+// Fixed to actively reverse the other wheel for a sharp, precise turn
+void moveright() {
+  analogWrite(sped_L, fast);
+  analogWrite(sped_R, slow);
+
+  digitalWrite(m1f, LOW);  
+  digitalWrite(m1b, HIGH);
+  digitalWrite(m2f, HIGH);   
+  digitalWrite(m2b, LOW);
+}
+
+// Fixed to actively reverse the other wheel for a sharp, precise turn
+void moveleft() {
+  analogWrite(sped_L, slow);
+  analogWrite(sped_R, fast);
+
+  digitalWrite(m1f, HIGH);  
+  digitalWrite(m1b, LOW);
+  digitalWrite(m2f, LOW);   
+  digitalWrite(m2b, HIGH);
+}
+
+void Stop() {
+  analogWrite(sped_L, 0);
+  analogWrite(sped_R, 0);
+
+  digitalWrite(m1f, LOW);
+  digitalWrite(m2f, LOW);
+  digitalWrite(m1b, LOW); 
+  digitalWrite(m2b, LOW);
+}
