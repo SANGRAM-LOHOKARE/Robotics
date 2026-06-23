@@ -1,0 +1,12 @@
+names:
+- earpod
+nc: 1
+roboflow:
+  license: CC BY 4.0
+  project: my-first-project-1tse1
+  url: https://universe.roboflow.com/sangrams-workspace-awhwb/my-first-project-1tse1/dataset/1
+  version: 1
+  workspace: sangrams-workspace-awhwb
+test: ../test/images
+train: ../train/images
+val: ../valid/images
